@@ -3,10 +3,10 @@ package cn.bluesking.util;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.commons.collections4.MapUtils;
 
 /**
  * 集合工具类
+ * 
  * @author 随心
  *
  */
@@ -36,7 +36,7 @@ public class CollectionUtil {
 	 * @return
 	 */
 	public static boolean isEmpty(Map<?, ?> map) {
-		return MapUtils.isEmpty(map);
+		return map == null || map.size() <= 0;
 	}
 	
 	/**
