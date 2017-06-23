@@ -8,5 +8,11 @@
 </head>
 <body>
 	<h2>${message}</h2>
+	<form action="/bluesking/hello1" method="post">
+		<input type="text" name="name" value="哈哈" />
+		<input type="text" name="test" value="lalal" />
+		<input type="file" name="file" value="" />
+		<input type="submit" value="提交" />
+	</form>
 </body>
 </html>

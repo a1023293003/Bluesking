@@ -1,4 +1,4 @@
-package cn.bluesking.constant;
+package cn.bluesking;
 
 /**
  * 提供相关配置项常量
