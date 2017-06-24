@@ -9,6 +9,11 @@ package cn.bluesking.util;
 public final class StringUtil {
 
 	/**
+	 * 分隔符
+	 */
+	public static final String SEPARATOR = String.valueOf((char) 29);
+	
+	/**
 	 * 判断字符串是否为空
 	 * @param str
 	 * @return

@@ -48,4 +48,9 @@ public interface ConfigConstant {
 	 */
 	public final static String APP_ASSET_PATH = "cn.bluesking.app.asset_path";
 	
+	/**
+	 * 上传文件的最大大小限制
+	 */
+	public final static String APP_UPLOAD_LIMIT = "cn.bluesking.app.upload_limit";
+	
 }

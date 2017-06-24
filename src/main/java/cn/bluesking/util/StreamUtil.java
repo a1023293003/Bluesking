@@ -3,6 +3,7 @@ package cn.bluesking.util;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,4 +42,30 @@ public final class StreamUtil {
 		return sBuilder.toString();
 	}
 
+	/**
+	 * 将输入流复制到输出流
+	 * @param inputStream [InputStream]输入流
+	 * @param outputStream [OutputStream]输出流
+	 */
+	public static void copyStream(InputStream inputStream, OutputStream outputStream) {
+		try {
+			int length;
+			byte[] buf = new byte[4 * 1024];
+			while((length = inputStream.read(buf)) != -1) {
+				outputStream.write(buf, 0, length);
+			}
+			outputStream.flush();
+		} catch (Exception e) {
+			_LOG.error("复制流失败！", e);
+			throw new RuntimeException(e);
+		} finally {
+			try {
+				inputStream.close();
+				outputStream.close();
+			} catch (Exception e) {
+				_LOG.error("关闭流失败！", e);
+			}
+		}
+	}
+	
 }

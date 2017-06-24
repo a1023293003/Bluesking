@@ -27,6 +27,8 @@ import cn.bluesking.bean.View;
 import cn.bluesking.helper.BeanHelper;
 import cn.bluesking.helper.ConfigHelper;
 import cn.bluesking.helper.ControllerHelper;
+import cn.bluesking.helper.RequestHelper;
+import cn.bluesking.helper.UploadHelper;
 import cn.bluesking.util.ArrayUtil;
 import cn.bluesking.util.CodecUtil;
 import cn.bluesking.util.JsonUtil;
@@ -48,6 +50,9 @@ public class DispatcherServlet extends HttpServlet {
 	 */
 	private static final Logger _LOG = LoggerFactory.getLogger(DispatcherServlet.class);
 
+	/**
+	 * 初始化servlet
+	 */
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		_LOG.info("初始化DispatcherServlet");
@@ -61,6 +66,8 @@ public class DispatcherServlet extends HttpServlet {
 		// 注册静态资源默认Servlet
 		ServletRegistration defaultServlet = servletContext.getServletRegistration("default");
 		defaultServlet.addMapping(ConfigHelper.getAppAssetPath() + "*");
+		// 初始化文件上传助手类
+		UploadHelper.init(servletContext);
 	}
 	
 	@Override
@@ -76,63 +83,84 @@ public class DispatcherServlet extends HttpServlet {
 			// 获取Controller类及其实例
 			Class<?> controllerClass = handler.getControllerClass();
 			Object controllerBean = BeanHelper.getBean(controllerClass);
-			// 获取请求参数对象
-			Map<String, Object> paramMap = new HashMap<String, Object>();
-			request.setCharacterEncoding("UTF-8");
-			Enumeration<String> paramNames = request.getParameterNames();
-			while(paramNames.hasMoreElements()) {
-				String paramName = paramNames.nextElement();
-				String paramValue = request.getParameter(paramName);
-				paramMap.put(paramName, paramValue);
+			Param param;
+			if(UploadHelper.isMultiPart(request)) {
+				// 文件上传
+				param = UploadHelper.createParam(request);
+			} else {
+				// 普通表单
+				param = RequestHelper.createParam(request);
 			}
-			// getParamter读取不到数据时从请求中读取数据
-			String body = CodecUtil.decodeURL(StreamUtil.getString(request.getInputStream()));
-			System.out.println("body = " + body);
-			if(StringUtil.isNotEmpty(body)) {
-				String[] params = body.split("&");
-				if(ArrayUtil.isNotEmpty(params)) {
-					for(String param : params) {
-						String[] array = param.split("=");
-						if(ArrayUtil.isNotEmpty(array) && array.length == 2) {
-							paramMap.put(array[0], array[1]);
-						}
-					}
-				}
-			}
-			Param param = new Param(paramMap);
 			// 调用Action方法
 			Method actionMethod = handler.getActionMethod();
-			Object result = ReflectionUtil.invokeMethod(controllerBean, actionMethod, param);
+			Object result;
+			// TODO 可以写成参数映射
+			if(actionMethod.getParameterCount() <= 0) {
+				result = ReflectionUtil.invokeMethod(controllerBean, actionMethod);
+			} else {
+				result = ReflectionUtil.invokeMethod(controllerBean, actionMethod, param);
+			}
 			// 处理Action返回值
 			if(result instanceof View) {
 				View view = (View) result;
-				String path = view.getPath();
-				if(StringUtil.isNotEmpty(path)) {
-					// TODO 跳转自由度太差
-					if(path.startsWith("/")) {
-						response.sendRedirect(request.getContextPath() + path);
-					} else {
-						Map<String, Object> model = view.getModel();
-						for(Entry<String, Object> entry : model.entrySet()) {
-							request.setAttribute(entry.getKey(), entry.getValue());
-						}
-						request.getRequestDispatcher(ConfigHelper.getAppJspPath() + path)
-							.forward(request, response);
-					}
-				}
+				handleViewResult(view, request, response);
 			} else if(result instanceof Data) {
 				Data data = (Data) result;
-				Object model = data.getModel();
-				if(model != null) {
-					response.setContentType("application/json");
-					response.setCharacterEncoding("UTF-8");
-					PrintWriter out = response.getWriter();
-					String json = JsonUtil.toJson(model);
-					out.println(json);
-					out.flush();
-					out.close();
-				}
+				handleDataResult(data, request, response);
+			} else {
+				// TODO 也许可以考虑跳转到指定页面
+				throw new RuntimeException("请求" + actionMethod.getName() + "返回值不合法！");
 			}
+		} else {
+			// TODO
+			System.out.println("跳转到404");
+		}
+	}
+	
+	/**
+	 * 视图类型返回值处理器
+	 * @param view [View]视图返回值
+	 * @param request [HttpServletRequest]请求
+	 * @param response [HttpServletResponse]响应
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	private void handleViewResult(View view, HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		String path = view.getPath();
+		if(StringUtil.isNotEmpty(path)) {
+			// TODO 跳转自由度太差
+			if(path.startsWith("/")) {
+				response.sendRedirect(request.getContextPath() + path);
+			} else {
+				Map<String, Object> model = view.getModel();
+				for(Entry<String, Object> entry : model.entrySet()) {
+					request.setAttribute(entry.getKey(), entry.getValue());
+				}
+				request.getRequestDispatcher(ConfigHelper.getAppJspPath() + path)
+					.forward(request, response);
+			}
+		}
+	}
+	
+	/**
+	 * 数据类型返回值处理器
+	 * @param data [Data]数据返回值
+	 * @param request [HttpServletRequest]请求
+	 * @param response [HttpServletResponse]响应
+	 * @throws IOException
+	 */
+	private void handleDataResult(Data data, HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
+		Object model = data.getModel();
+		if(model != null) {
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			PrintWriter out = response.getWriter();
+			String json = JsonUtil.toJson(model);
+			out.println(json);
+			out.flush();
+			out.close();
 		}
 	}
 }

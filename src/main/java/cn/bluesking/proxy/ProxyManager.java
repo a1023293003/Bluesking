@@ -18,14 +18,13 @@ public class ProxyManager {
 	@SuppressWarnings("unchecked")
 	public static <T> T createProxy(final Class<?> targetClass, final List<Proxy> proxyList) {
 		return (T) Enhancer.create(targetClass, new MethodInterceptor() {
-
 			@Override
 			public Object intercept(Object targetObject, Method targetMethod, Object[] methodParams, 
 					MethodProxy methodProxy) throws Throwable {
-				return new ProxyChain(
-						targetClass, targetObject, targetMethod, methodProxy, methodParams, proxyList);
+				// 拦截方法，然后调用代理链的执行方法
+				return new ProxyChain(targetClass, targetObject, targetMethod, 
+						methodProxy, methodParams, proxyList).doProxyChain();
 			}
-			
 		});
 	}
 }

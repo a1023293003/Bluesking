@@ -25,7 +25,6 @@ public class ProxyChain {
 	
 	public ProxyChain(Class<?> targetClass, Object targetObject, Method targetMethod, MethodProxy methodProxy,
 			Object[] methodParams, List<Proxy> proxyList) {
-		super();
 		this.targetClass = targetClass;
 		this.targetObject = targetObject;
 		this.targetMethod = targetMethod;

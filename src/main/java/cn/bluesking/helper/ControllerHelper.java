@@ -37,7 +37,8 @@ public final class ControllerHelper {
 						// 找到Action注释方法
 						if(method.isAnnotationPresent(Action.class)) {
 							Action action = method.getAnnotation(Action.class);
-							String mapping = action.value();
+							// TODO Action注解标签配置读取
+							String mapping = action.value()[0];
 							if(mapping != null && mapping.matches("\\w+:/\\w*")) {
 								String array[] = mapping.split(":");
 								if(ArrayUtil.isNotEmpty(array) && array.length == 2) {

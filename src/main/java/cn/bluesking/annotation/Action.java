@@ -16,8 +16,21 @@ import java.lang.annotation.Target;
 public @interface Action {
 	
 	/**
-	 * 请求类型与路径
+	 * Action接收的url
 	 * @return
 	 */
-	String value();
+	String[] urlPatterns() default {};
+	
+	/**
+	 * Action接收的url
+	 * @return
+	 */
+	String[] value() default {};
+	
+	/**
+	 * 请求方式
+	 * @return
+	 */
+	String[] method() default {"get", "post"};
+	
 }

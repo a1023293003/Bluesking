@@ -45,7 +45,7 @@ public abstract class AspectProxy implements Proxy {
 	}
 	
 	/**
-	 * before之前
+	 * 前置增强之前
 	 */
 	public void begin() {
 	}
@@ -93,7 +93,7 @@ public abstract class AspectProxy implements Proxy {
 	}
 	
 	/**
-	 * 返回之前
+	 * 方法返回参数之前
 	 */
 	public void end() {
 	}

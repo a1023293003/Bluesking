@@ -7,14 +7,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Set;
-
 import cn.bluesking.annotation.Aspect;
-import cn.bluesking.proxy.AspectProxy;
+import cn.bluesking.annotation.Service;
+import cn.bluesking.annotation.Transaction;
 import cn.bluesking.proxy.Proxy;
 import cn.bluesking.proxy.ProxyManager;
 
@@ -71,7 +71,18 @@ public final class AopHelper {
 	 */
 	private static Map<Class<?>, Set<Class<?>>> createProxyMap() throws Exception {
 		Map<Class<?>, Set<Class<?>>> proxyMap = new HashMap<Class<?>, Set<Class<?>>>();
-		Set<Class<?>> proxyClassSet = ClassHelper.getClassSetBySuper(AspectProxy.class);
+		addAspectProxy(proxyMap);
+		addTransactionProxy(proxyMap);
+		return proxyMap;
+	}
+	
+	/**
+	 * 添加普通切面代理类和目标类映射关系
+	 * @param proxyMap
+	 * @throws Exception
+	 */
+	private static void addAspectProxy(Map<Class<?>, Set<Class<?>>> proxyMap) throws Exception {
+		Set<Class<?>> proxyClassSet = ClassHelper.getClassSetBySuper(Aspect.class);
 		for(Class<?> proxyClass : proxyClassSet) {
 			if(proxyClass.isAnnotationPresent(Aspect.class)) {
 				Aspect aspect = proxyClass.getAnnotation(Aspect.class);
@@ -79,7 +90,17 @@ public final class AopHelper {
 				proxyMap.put(proxyClass, targetClassSet);
 			}
 		}
-		return proxyMap;
+	}
+	
+	/**
+	 * 添加事务切面代理类和业务逻辑类映射关系
+	 * @param proxyMap
+	 * @throws Exception
+	 */
+	private static void addTransactionProxy(Map<Class<?>, Set<Class<?>>> proxyMap) throws Exception {
+		Set<Class<?>> serviceClassSet = ClassHelper.getClassSetByAnnotation(Service.class);
+		proxyMap.put(Transaction.class, serviceClassSet);
+		
 	}
 	
 	/**
