@@ -28,6 +28,7 @@ import cn.bluesking.helper.BeanHelper;
 import cn.bluesking.helper.ConfigHelper;
 import cn.bluesking.helper.ControllerHelper;
 import cn.bluesking.helper.RequestHelper;
+import cn.bluesking.helper.ServletHelper;
 import cn.bluesking.helper.UploadHelper;
 import cn.bluesking.util.ArrayUtil;
 import cn.bluesking.util.CodecUtil;
@@ -73,47 +74,54 @@ public class DispatcherServlet extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// 获取请求方法和请求路径
-		String requestMethod = request.getMethod().toLowerCase();
-		String requestPath = request.getPathInfo();
-		System.out.println(requestMethod + "  " + requestPath);
-		// 获取Action容器
-		Handler handler = ControllerHelper.getHandler(requestMethod, requestPath);
-		if(handler != null) {
-			// 获取Controller类及其实例
-			Class<?> controllerClass = handler.getControllerClass();
-			Object controllerBean = BeanHelper.getBean(controllerClass);
-			Param param;
-			if(UploadHelper.isMultiPart(request)) {
-				// 文件上传
-				param = UploadHelper.createParam(request);
+		// 为当前线程初始化ServletHelper
+		ServletHelper.init(request, response);
+		try {
+			// 获取请求方法和请求路径
+			String requestMethod = request.getMethod().toLowerCase();
+			String requestPath = request.getPathInfo();
+			System.out.println(requestMethod + "  " + requestPath);
+			// 获取Action容器
+			Handler handler = ControllerHelper.getHandler(requestMethod, requestPath);
+			if(handler != null) {
+				// 获取Controller类及其实例
+				Class<?> controllerClass = handler.getControllerClass();
+				Object controllerBean = BeanHelper.getBean(controllerClass);
+				Param param;
+				if(UploadHelper.isMultiPart(request)) {
+					// 文件上传
+					param = UploadHelper.createParam(request);
+				} else {
+					// 普通表单
+					param = RequestHelper.createParam(request);
+				}
+				// 调用Action方法
+				Method actionMethod = handler.getActionMethod();
+				Object result;
+				// TODO 可以写成参数映射
+				if(actionMethod.getParameterCount() <= 0) {
+					result = ReflectionUtil.invokeMethod(controllerBean, actionMethod);
+				} else {
+					result = ReflectionUtil.invokeMethod(controllerBean, actionMethod, param);
+				}
+				// 处理Action返回值
+				if(result instanceof View) {
+					View view = (View) result;
+					handleViewResult(view, request, response);
+				} else if(result instanceof Data) {
+					Data data = (Data) result;
+					handleDataResult(data, request, response);
+				} else {
+					// TODO 也许可以考虑跳转到指定页面
+					throw new RuntimeException("请求" + actionMethod.getName() + "返回值不合法！");
+				}
 			} else {
-				// 普通表单
-				param = RequestHelper.createParam(request);
+				// TODO
+				System.out.println("跳转到404");
 			}
-			// 调用Action方法
-			Method actionMethod = handler.getActionMethod();
-			Object result;
-			// TODO 可以写成参数映射
-			if(actionMethod.getParameterCount() <= 0) {
-				result = ReflectionUtil.invokeMethod(controllerBean, actionMethod);
-			} else {
-				result = ReflectionUtil.invokeMethod(controllerBean, actionMethod, param);
-			}
-			// 处理Action返回值
-			if(result instanceof View) {
-				View view = (View) result;
-				handleViewResult(view, request, response);
-			} else if(result instanceof Data) {
-				Data data = (Data) result;
-				handleDataResult(data, request, response);
-			} else {
-				// TODO 也许可以考虑跳转到指定页面
-				throw new RuntimeException("请求" + actionMethod.getName() + "返回值不合法！");
-			}
-		} else {
-			// TODO
-			System.out.println("跳转到404");
+		} finally {
+			// 销毁当前线程ServletHelper实例
+			ServletHelper.destroy();
 		}
 	}
 	

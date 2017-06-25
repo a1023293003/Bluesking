@@ -300,9 +300,10 @@ public class ConfigParser {
 									break;
 								}
 							}
-							System.out.println("ConfigParser(369):截取出来的key : [" + key + "]");
-							System.out.println("ConfigParser(370):截取出来的value : [" + value + "]");
-							System.out.println("ConfigParser(371):截取出来的注释 : [" + commentsBuf.toString() + "]");
+							_LOG.debug("截取出来的key : [" + key + "]");
+							_LOG.debug("截取出来的value : [" + value + "]");
+							_LOG.debug("截取出来的注释 : [" + commentsBuf.toString().
+									substring(0, commentsBuf.length() >= 1 ? commentsBuf.length() - 1 : 0) + "]");
 							// 存储注释到LinkedHashMap中
 							this.comments.put(key, commentsBuf.toString());
 							// 存储键值对

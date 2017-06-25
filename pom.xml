@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cn.bluesking</groupId>
-	<artifactId>bluesking</artifactId>
+	<artifactId>bluesking-framework</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>chapter1 Maven Webapp</name>
@@ -12,6 +12,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
+		<!-- Apache Shiro 安全控制框架 -->
+		<dependency>
+		    <groupId>org.apache.shiro</groupId>
+		    <artifactId>shiro-core</artifactId>
+		    <version>1.4.0</version>
+		</dependency>
 		<!-- Apache FileUpload 文件上传类库 -->
 		<dependency>
 		    <groupId>commons-fileupload</groupId>
