@@ -5,7 +5,7 @@
 	<artifactId>bluesking-framework</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>chapter1 Maven Webapp</name>
+	<name>bluesking-framework</name>
 	<url>http://maven.apache.org</url>
 	<!-- 参数配置 -->
 	<properties>
@@ -29,6 +29,12 @@
 		    <groupId>cglib</groupId>
 		    <artifactId>cglib</artifactId>
 		    <version>3.2.5</version>
+		</dependency>
+		<!-- Apache Commons Codec 编码和解码类库 -->
+		<dependency>
+		    <groupId>commons-codec</groupId>
+		    <artifactId>commons-codec</artifactId>
+		    <version>1.10</version>
 		</dependency>
 		<!-- Apache Commons DbUtils JDBC类库 -->
 		<dependency>
