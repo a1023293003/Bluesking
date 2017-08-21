@@ -363,60 +363,60 @@ public class ConfigParser {
 	 * @param convtBuf [char[]]返回转换结果的数组
 	 * @return convtBuf [char[]]返回转换结果的数组
 	 */
-    private String loadConvert (char[] in, int off, int len, char[] convtBuf) {
-        if (convtBuf.length < len) {
-            int newLen = len * 2;
-            if (newLen < 0) {
-                newLen = Integer.MAX_VALUE;
-            }
-            convtBuf = new char[newLen];
-        }
-        char aChar;
-        char[] out = convtBuf;
-        int outLen = 0;
-        int end = off + len;
+	private String loadConvert (char[] in, int off, int len, char[] convtBuf) {
+		if (convtBuf.length < len) {
+			int newLen = len * 2;
+			if (newLen < 0) {
+				newLen = Integer.MAX_VALUE;
+			}
+			convtBuf = new char[newLen];
+		}
+		char aChar;
+		char[] out = convtBuf;
+		int outLen = 0;
+		int end = off + len;
 
-        while (off < end) {
-            aChar = in[off++];
-            if (aChar == '\\') {
-                aChar = in[off++];
-                if(aChar == 'u') {
-                    // Read the xxxx
-                    int value=0;
-                    for (int i=0; i<4; i++) {
-                        aChar = in[off++];
-                        switch (aChar) {
-                          case '0': case '1': case '2': case '3': case '4':
-                          case '5': case '6': case '7': case '8': case '9':
-                             value = (value << 4) + aChar - '0';
-                             break;
-                          case 'a': case 'b': case 'c':
-                          case 'd': case 'e': case 'f':
-                             value = (value << 4) + 10 + aChar - 'a';
-                             break;
-                          case 'A': case 'B': case 'C':
-                          case 'D': case 'E': case 'F':
-                             value = (value << 4) + 10 + aChar - 'A';
-                             break;
-                          default:
-                              throw new IllegalArgumentException(
-                                           "Malformed \\uxxxx encoding.");
-                        }
-                     }
-                    out[outLen++] = (char)value;
-                } else {
-                    if (aChar == 't') aChar = '\t';
-                    else if (aChar == 'r') aChar = '\r';
-                    else if (aChar == 'n') aChar = '\n';
-                    else if (aChar == 'f') aChar = '\f';
-                    out[outLen++] = aChar;
-                }
-            } else {
-                out[outLen++] = aChar;
-            }
-        }
-        return new String (out, 0, outLen);
-    }
+		while (off < end) {
+			aChar = in[off++];
+			if (aChar == '\\') {
+				aChar = in[off++];
+				if(aChar == 'u') {
+					// Read the xxxx
+					int value=0;
+					for (int i=0; i<4; i++) {
+						aChar = in[off++];
+						switch (aChar) {
+							case '0': case '1': case '2': case '3': case '4':
+							case '5': case '6': case '7': case '8': case '9':
+								value = (value << 4) + aChar - '0';
+								break;
+							case 'a': case 'b': case 'c':
+							case 'd': case 'e': case 'f':
+								value = (value << 4) + 10 + aChar - 'a';
+								break;
+							case 'A': case 'B': case 'C':
+							case 'D': case 'E': case 'F':
+								value = (value << 4) + 10 + aChar - 'A';
+								break;
+							default:
+								throw new IllegalArgumentException(
+											"Malformed \\uxxxx encoding.");
+						}
+					}
+					out[outLen++] = (char)value;
+				} else {
+					if (aChar == 't') aChar = '\t';
+					else if (aChar == 'r') aChar = '\r';
+					else if (aChar == 'n') aChar = '\n';
+					else if (aChar == 'f') aChar = '\f';
+					out[outLen++] = aChar;
+				}
+			} else {
+				out[outLen++] = aChar;
+			}
+		}
+		return new String (out, 0, outLen);
+	}
 	
 	/**
 	 * stream和reader的缓存读取器
@@ -424,202 +424,202 @@ public class ConfigParser {
 	 *
 	 */
 	class LineReader {
-        public LineReader(InputStream inStream) {
-            this.inStream = inStream;
-            inByteBuf = new byte[8192];
-        }
+		public LineReader(InputStream inStream) {
+			this.inStream = inStream;
+			inByteBuf = new byte[8192];
+		}
 
-        public LineReader(Reader reader) {
-            this.reader = reader;
-            inCharBuf = new char[8192];
-        }
+		public LineReader(Reader reader) {
+			this.reader = reader;
+			inCharBuf = new char[8192];
+		}
 
-        /**
-         * 字节缓存数组
-         */
-        byte[] inByteBuf;
-        
-        /**
-         * 字符缓存数组
-         */
-        char[] inCharBuf;
-        
-        /**
-         * 读取的每一行数据的缓存数组
-         */
-        char[] lineBuf = new char[1024];
-        
-        /**
-         * 该次读取的内容长度
-         */
-        int inLimit = 0;
-        
-        /*
-         * 当前读取的字符的位置
-         */
-        int inOff = 0;
-        
-        /**
-         * 输入的stream和reader
-         */
-        InputStream inStream;
-        Reader reader;
+		/**
+		 * 字节缓存数组
+		 */
+		byte[] inByteBuf;
+		
+		/**
+		 * 字符缓存数组
+		 */
+		char[] inCharBuf;
+		
+		/**
+		 * 读取的每一行数据的缓存数组
+		 */
+		char[] lineBuf = new char[1024];
+		
+		/**
+		 * 该次读取的内容长度
+		 */
+		int inLimit = 0;
+		
+		/*
+		 * 当前读取的字符的位置
+		 */
+		int inOff = 0;
+		
+		/**
+		 * 输入的stream和reader
+		 */
+		InputStream inStream;
+		Reader reader;
 
-        /**
-         * 读取一行数据，包括注释
-         * <pre>
-         * 修改的JDK源码
-         * 如果以\结尾，表示内容接着下一行
-         * </pre>
-         * 
-         * @return [int]读取到的字符长度
-         * @throws IOException
-         */
-        int readLine() throws IOException {
-        	// 返回值，该次读取的总长度
-            int len = 0;
-            // 每次读取的字符
-            char c = 0;
+		/**
+		 * 读取一行数据，包括注释
+		 * <pre>
+		 * 修改的JDK源码
+		 * 如果以\结尾，表示内容接着下一行
+		 * </pre>
+		 * 
+		 * @return [int]读取到的字符长度
+		 * @throws IOException
+		 */
+		int readLine() throws IOException {
+			// 返回值，该次读取的总长度
+			int len = 0;
+			// 每次读取的字符
+			char c = 0;
 
-            // 跳过空格，用于去除前导空格
-            boolean skipWhiteSpace = true;
-            // 附加一行的开始，和skipWhiteSpace一起去除前导空格
-            boolean appendedLineBegin = false;
-            // 前面是反斜杠
-            boolean precedingBackslash = false;
-            // 判断是否读取到了\r，windows下回车为：\r\n
-            boolean skipLF = false;
+			// 跳过空格，用于去除前导空格
+			boolean skipWhiteSpace = true;
+			// 附加一行的开始，和skipWhiteSpace一起去除前导空格
+			boolean appendedLineBegin = false;
+			// 前面是反斜杠
+			boolean precedingBackslash = false;
+			// 判断是否读取到了\r，windows下回车为：\r\n
+			boolean skipLF = false;
 
-            while (true) {
-            	// 判断是否读取完了缓存区中的数据
-                if (inOff >= inLimit) {
-                	// 读取数据到缓存数组中，读取成功返回读取数据长度，读取失败返回-1
-                    inLimit = (inStream==null)? reader.read(inCharBuf)
-                                              : inStream.read(inByteBuf);
-                    // 初始化当前读取的字符的位置
-                    inOff = 0;
-                    if (inLimit <= 0) {
-                    	// 如果读取总长度为0或则该行是注释
-                        if (len == 0) {
-                            return -1;
-                        }
-                        // 如果以反斜杠结尾，总长度减一
-                        if (precedingBackslash) {
-                            len--;
-                        }
-                        return len;
-                    }
-                }
-                if (inStream != null) {
-                    //The line below is equivalent to calling a
-                    //ISO8859-1 decoder.
-                	// 缓存区中的数据相当于调用了ISO8859-1编码
-                    c = (char) (0xff & inByteBuf[inOff++]);
-                } else {
-                	// reader因为有设置默认编码，所以直接读取
-                    c = inCharBuf[inOff++];
-                }
-                // 如果读取到了\r然后后面接着\n，忽略掉
-                if (skipLF) {
-                    skipLF = false;
-                    if (c == '\n') {
-                        continue;
-                    }
-                }
-                // 判断是否需要滤掉前导空格
-                if (skipWhiteSpace) {
-                	// 三种空格类型都返回
-                    if (c == ' ' || c == '\t' || c == '\f') {
-                        continue;
-                    }
-                    // 如果不是附加一行的开始并且当前字符为换行（windows下，和linux下）则返回
-                    if (!appendedLineBegin && (c == '\r' || c == '\n')) {
-                        continue;
-                    }
-                    // 不跳过空格
-                    skipWhiteSpace = false;
-                    // 不是追加一行的开始
-                    appendedLineBegin = false;
-                }
-                // 不是换行符，加上之前的过滤，判定字符合法
-                if (c != '\n' && c != '\r') {
-                	// 读取到读取的每一行数据的缓存数组
-                    lineBuf[len++] = c;
-                    // 如果数组存满了
-                    if (len == lineBuf.length) {
-                    	// 新建一个长度为当前数组2倍的数组
-                        int newLength = lineBuf.length * 2;
-                        if (newLength < 0) {
-                        	// 当前数组长度不合法则创建一个最大整型长度的数组
-                            newLength = Integer.MAX_VALUE;
-                        }
-                        // 创建数组
-                        char[] buf = new char[newLength];
-                        // 当前数组的内容写入到新创建的数组中
-                        System.arraycopy(lineBuf, 0, buf, 0, lineBuf.length);
-                        // 赋值
-                        lineBuf = buf;
-                    }
-                    // flip the preceding backslash flag
-                    // 当前字符为反斜杠
-                    if (c == '\\') {
-                    	// 取反（好处在于碰到真想输出反斜杠的）
-                        precedingBackslash = !precedingBackslash;
-                    } else {
-                        precedingBackslash = false;
-                    }
-                }
-                // 检测到当前字符为换行符\n或\r
-                else {
-                    // reached EOL
-                	// 当前是注释并且读取总长度为0
-                    if (len == 0) {
-                        // 省略空格
-                        skipWhiteSpace = true;
-                        // 当前读取总长度初始化为0
-                        len = 0;
-                        continue;
-                    }
-                    // 已经读取完了缓存区的内容
-                    if (inOff >= inLimit) {
-                    	// 读取内容到缓存区
-                        inLimit = (inStream==null)
-                                  ? reader.read(inCharBuf)
-                                  : inStream.read(inByteBuf);
-                        // 初始化读取字符下标为0
-                        inOff = 0;
-                        // 数据已经读取完毕
-                        if (inLimit <= 0) {
-                        	// 如果以反斜杠结尾，长度减一
-                            if (precedingBackslash) {
-                                len--;
-                            }
-                            return len;
-                        }
-                    }
-                    // 数据尚未读取完毕，并且上一个字符是反斜杠，说明不是注释
-                    if (precedingBackslash) {
-                    	// 因为反斜杠的原因，所以读取总长度减一
-                        len -= 1;
-                        // 下面两行是为了适应配置文件中的代码格式
-                        // skip the leading whitespace characters in following line
-                        // 跳过前导空格
-//                        skipWhiteSpace = true;
-                        // 追加新的一行的开始
-//                        appendedLineBegin = true;
-                        // 上一个不是转义符
-                        precedingBackslash = false;
-                        // 当前字符为回车
-                        if (c == '\r') {
-                            skipLF = true;
-                        }
-                    } else {
-                    	// 如果读取到\n或\r而且前一个符号不是反斜杠，则返回
-                        return len;
-                    }
-                }
-            }
-        }
-    }
+			while (true) {
+				// 判断是否读取完了缓存区中的数据
+				if (inOff >= inLimit) {
+					// 读取数据到缓存数组中，读取成功返回读取数据长度，读取失败返回-1
+					inLimit = (inStream==null)? reader.read(inCharBuf)
+											  : inStream.read(inByteBuf);
+					// 初始化当前读取的字符的位置
+					inOff = 0;
+					if (inLimit <= 0) {
+						// 如果读取总长度为0或则该行是注释
+						if (len == 0) {
+							return -1;
+						}
+						// 如果以反斜杠结尾，总长度减一
+						if (precedingBackslash) {
+							len--;
+						}
+						return len;
+					}
+				}
+				if (inStream != null) {
+					//The line below is equivalent to calling a
+					//ISO8859-1 decoder.
+					// 缓存区中的数据相当于调用了ISO8859-1编码
+					c = (char) (0xff & inByteBuf[inOff++]);
+				} else {
+					// reader因为有设置默认编码，所以直接读取
+					c = inCharBuf[inOff++];
+				}
+				// 如果读取到了\r然后后面接着\n，忽略掉
+				if (skipLF) {
+					skipLF = false;
+					if (c == '\n') {
+						continue;
+					}
+				}
+				// 判断是否需要滤掉前导空格
+				if (skipWhiteSpace) {
+					// 三种空格类型都返回
+					if (c == ' ' || c == '\t' || c == '\f') {
+						continue;
+					}
+					// 如果不是附加一行的开始并且当前字符为换行（windows下，和linux下）则返回
+					if (!appendedLineBegin && (c == '\r' || c == '\n')) {
+						continue;
+					}
+					// 不跳过空格
+					skipWhiteSpace = false;
+					// 不是追加一行的开始
+					appendedLineBegin = false;
+				}
+				// 不是换行符，加上之前的过滤，判定字符合法
+				if (c != '\n' && c != '\r') {
+					// 读取到读取的每一行数据的缓存数组
+					lineBuf[len++] = c;
+					// 如果数组存满了
+					if (len == lineBuf.length) {
+						// 新建一个长度为当前数组2倍的数组
+						int newLength = lineBuf.length * 2;
+						if (newLength < 0) {
+							// 当前数组长度不合法则创建一个最大整型长度的数组
+							newLength = Integer.MAX_VALUE;
+						}
+						// 创建数组
+						char[] buf = new char[newLength];
+						// 当前数组的内容写入到新创建的数组中
+						System.arraycopy(lineBuf, 0, buf, 0, lineBuf.length);
+						// 赋值
+						lineBuf = buf;
+					}
+					// flip the preceding backslash flag
+					// 当前字符为反斜杠
+					if (c == '\\') {
+						// 取反（好处在于碰到真想输出反斜杠的）
+						precedingBackslash = !precedingBackslash;
+					} else {
+						precedingBackslash = false;
+					}
+				}
+				// 检测到当前字符为换行符\n或\r
+				else {
+					// reached EOL
+					// 当前是注释并且读取总长度为0
+					if (len == 0) {
+						// 省略空格
+						skipWhiteSpace = true;
+						// 当前读取总长度初始化为0
+						len = 0;
+						continue;
+					}
+					// 已经读取完了缓存区的内容
+					if (inOff >= inLimit) {
+						// 读取内容到缓存区
+						inLimit = (inStream==null)
+								  ? reader.read(inCharBuf)
+								  : inStream.read(inByteBuf);
+						// 初始化读取字符下标为0
+						inOff = 0;
+						// 数据已经读取完毕
+						if (inLimit <= 0) {
+							// 如果以反斜杠结尾，长度减一
+							if (precedingBackslash) {
+								len--;
+							}
+							return len;
+						}
+					}
+					// 数据尚未读取完毕，并且上一个字符是反斜杠，说明不是注释
+					if (precedingBackslash) {
+						// 因为反斜杠的原因，所以读取总长度减一
+						len -= 1;
+						// 下面两行是为了适应配置文件中的代码格式
+						// skip the leading whitespace characters in following line
+						// 跳过前导空格
+//						skipWhiteSpace = true;
+						// 追加新的一行的开始
+//						appendedLineBegin = true;
+						// 上一个不是转义符
+						precedingBackslash = false;
+						// 当前字符为回车
+						if (c == '\r') {
+							skipLF = true;
+						}
+					} else {
+						// 如果读取到\n或\r而且前一个符号不是反斜杠，则返回
+						return len;
+					}
+				}
+			}
+		}
+	}
 	
 }

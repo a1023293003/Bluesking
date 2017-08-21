@@ -79,8 +79,10 @@ public final class ClassUtil {
 				if(url != null) {
 					// 获取url协议:protocol://host:port/path?query#fragment
 					String protocol = url.getProtocol();
+					// 区分文件和引用包的类
 					if("file".equals(protocol)) {
-						String packagePath = url.getPath().replaceAll("%20", " ");
+						String packagePath = url.
+								toURI().getPath().replaceAll("%20", " "); // 这里先转成URI再取路径
 						addClass(classSet, packagePath, packageName);
 					} else if("jar".equals(protocol)) {
 						JarURLConnection jarURLConnection = 

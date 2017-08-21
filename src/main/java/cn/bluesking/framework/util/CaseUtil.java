@@ -45,7 +45,7 @@ public final class CaseUtil {
 	public static double caseDouble(Object obj, double defaultValue) {
 		if(obj != null) {
 			String strValue = caseString(obj);
-			if(StringUtil.isEmpty(strValue)) {
+			if(StringUtil.isNotEmpty(strValue)) {
 				try {
 					return Double.parseDouble(strValue);
 				} catch (NumberFormatException e) {
@@ -74,7 +74,7 @@ public final class CaseUtil {
 	public static long caseLong(Object obj, long defaultValue) {
 		if(obj != null) {
 			String strValue = caseString(obj);
-			if(StringUtil.isEmpty(strValue)) {
+			if(StringUtil.isNotEmpty(strValue)) {
 				try {
 					return Long.parseLong(strValue);
 				} catch (NumberFormatException e) {
@@ -103,7 +103,7 @@ public final class CaseUtil {
 	public static int caseInt(Object obj, int defaultValue) {
 		if(obj != null) {
 			String strValue = caseString(obj);
-			if(StringUtil.isEmpty(strValue)) {
+			if(StringUtil.isNotEmpty(strValue)) {
 				try {
 					return Integer.parseInt(strValue);
 				} catch (NumberFormatException e) {

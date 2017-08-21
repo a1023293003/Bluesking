@@ -1,6 +1,8 @@
 package cn.bluesking.framework.demo;
 
-import java.util.Map.Entry;
+import java.util.HashMap;
+
+import java.util.HashMap;
 
 import cn.bluesking.framework.annotation.Action;
 import cn.bluesking.framework.annotation.Controller;
@@ -10,6 +12,8 @@ import cn.bluesking.framework.bean.View;
 @Controller
 public class DemoController {
 
+	HashMap demo;
+	
 	@Action(value = "get:/hello")
 	public View demo() {
 		System.out.println("demo方法");
